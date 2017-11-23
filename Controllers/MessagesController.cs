@@ -1,36 +1,31 @@
-using System;
+﻿using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-
-using Microsoft.Bot.Connector;
 using Microsoft.Bot.Builder.Dialogs;
-using System.Web.Http.Description;
-using System.Net.Http;
-using System.Diagnostics;
+using Microsoft.Bot.Connector;
 
-namespace Microsoft.Bot.Sample.LuisBot
+namespace OhIlSeokBot
 {
     [BotAuthentication]
     public class MessagesController : ApiController
     {
         /// <summary>
         /// POST: api/Messages
-        /// receive a message from a user and send replies
+        /// Receive a message from a user and reply to it
         /// </summary>
-        /// <param name="activity"></param>
-        [ResponseType(typeof(void))]
-        public virtual async Task<HttpResponseMessage> Post([FromBody] Activity activity)
+        public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
-            // check if activity is of type message
-            if (activity.GetActivityType() == ActivityTypes.Message)
+            if (activity.Type == ActivityTypes.Message)
             {
-                await Conversation.SendAsync(activity, () => new BasicLuisDialog());
+                await Conversation.SendAsync(activity, () => new Dialogs.OhIlSeokBotLuisDialog());
             }
             else
             {
                 HandleSystemMessage(activity);
             }
-            return new HttpResponseMessage(System.Net.HttpStatusCode.Accepted);
+            var response = Request.CreateResponse(HttpStatusCode.OK);
+            return response;
         }
 
         private Activity HandleSystemMessage(Activity message)
